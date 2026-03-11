@@ -30,11 +30,13 @@ Levels 3-15 | 5 trials per level | temperature 0.0
 |---|-------|------:|:--------:|:-------------:|
 | 1 | llama-4-maverick | 322 | 52.7% | 6.2% |
 | 2 | gpt-4.1 | 315 | 52.0% | 4.6% |
-| 3 | gpt-4.1-nano | 270 | 45.8% | 1.5% |
-| 4 | deepseek-v3.2 | 251 | 43.0% | 0.0% |
-| 5 | deepseek-r1 | 245 | 33.5% | 16.9% |
-| 6 | o3 | 12 | 1.0% | 3.1% |
-| 7 | o4-mini | 6 | 0.5% | 1.5% |
+| 3 | claude-sonnet-4.5 | 308 | 50.8% | 4.6% |
+| 4 | gpt-4.1-nano | 270 | 45.8% | 1.5% |
+| 5 | claude-sonnet-4.6 | 253 | 39.9% | 7.7% |
+| 6 | deepseek-v3.2 | 251 | 43.0% | 0.0% |
+| 7 | deepseek-r1 | 245 | 33.5% | 16.9% |
+| 8 | o3 | 12 | 1.0% | 3.1% |
+| 9 | o4-mini | 6 | 0.5% | 1.5% |
 
 > **Note:** o3 and o4-mini score near zero due to response format issues - their reasoning output breaks sentence extraction. This is a known issue being investigated.
 
