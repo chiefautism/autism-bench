@@ -35,13 +35,14 @@ Levels 3-15 | 5 trials per level | temperature 0.0
 | 5 | claude-haiku-4.5 | 303 | 50.9% | 3.1% |
 | 6 | gpt-4.1-nano | 270 | 45.8% | 1.5% |
 | 7 | llama-4-scout | 259 | 43.2% | 3.1% |
-| 8 | claude-sonnet-4.6 | 253 | 39.9% | 7.7% |
-| 9 | deepseek-v3.2 | 251 | 43.0% | 0.0% |
-| 10 | mistral-large-2512 | 246 | 39.7% | 6.2% |
-| 11 | deepseek-r1 | 245 | 33.5% | 16.9% |
-| 12 | gemini-3.1-pro-preview | 183 | 28.8% | 6.2% |
-| 13 | o3 | 12 | 1.0% | 3.1% |
-| 14 | o4-mini | 6 | 0.5% | 1.5% |
+| 8 | claude-opus-4.6 | 257 | 37.1% | 13.8% |
+| 9 | claude-sonnet-4.6 | 253 | 39.9% | 7.7% |
+| 10 | deepseek-v3.2 | 251 | 43.0% | 0.0% |
+| 11 | mistral-large-2512 | 246 | 39.7% | 6.2% |
+| 12 | deepseek-r1 | 245 | 33.5% | 16.9% |
+| 13 | gemini-3.1-pro-preview | 183 | 28.8% | 6.2% |
+| 14 | o3 | 12 | 1.0% | 3.1% |
+| 15 | o4-mini | 6 | 0.5% | 1.5% |
 
 > **Note:** o3, o4-mini, and gemini-2.5-pro score near zero due to response format issues - their reasoning output breaks sentence extraction. This is a known issue being investigated.
 

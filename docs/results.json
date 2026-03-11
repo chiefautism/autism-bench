@@ -1684,6 +1684,101 @@
           "trials": 5
         }
       }
+    },
+    "anthropic/claude-opus-4.6": {
+      "score": 257,
+      "validity": 37.1,
+      "perfect_rate": 13.8,
+      "cost": 0.0,
+      "levels_tested": "3-15",
+      "trials_per_level": 5,
+      "categories": {
+        "structural": 32.7,
+        "meta": 45.8,
+        "lexical": 28.3,
+        "relational": 38.7,
+        "positional": 44.9
+      },
+      "level_details": {
+        "3": {
+          "validity": 73.3,
+          "perfect_rate": 60.0,
+          "avg_score": 4.0,
+          "trials": 5
+        },
+        "4": {
+          "validity": 60.0,
+          "perfect_rate": 40.0,
+          "avg_score": 4.0,
+          "trials": 5
+        },
+        "5": {
+          "validity": 72.0,
+          "perfect_rate": 40.0,
+          "avg_score": 5.6,
+          "trials": 5
+        },
+        "6": {
+          "validity": 56.7,
+          "perfect_rate": 20.0,
+          "avg_score": 4.6,
+          "trials": 5
+        },
+        "7": {
+          "validity": 51.4,
+          "perfect_rate": 20.0,
+          "avg_score": 5.0,
+          "trials": 5
+        },
+        "8": {
+          "validity": 20.0,
+          "perfect_rate": 0.0,
+          "avg_score": 1.6,
+          "trials": 5
+        },
+        "9": {
+          "validity": 31.1,
+          "perfect_rate": 0.0,
+          "avg_score": 2.8,
+          "trials": 5
+        },
+        "10": {
+          "validity": 36.0,
+          "perfect_rate": 0.0,
+          "avg_score": 3.6,
+          "trials": 5
+        },
+        "11": {
+          "validity": 30.9,
+          "perfect_rate": 0.0,
+          "avg_score": 3.4,
+          "trials": 5
+        },
+        "12": {
+          "validity": 15.0,
+          "perfect_rate": 0.0,
+          "avg_score": 1.8,
+          "trials": 5
+        },
+        "13": {
+          "validity": 38.5,
+          "perfect_rate": 0.0,
+          "avg_score": 5.0,
+          "trials": 5
+        },
+        "14": {
+          "validity": 27.1,
+          "perfect_rate": 0.0,
+          "avg_score": 3.8,
+          "trials": 5
+        },
+        "15": {
+          "validity": 41.3,
+          "perfect_rate": 0.0,
+          "avg_score": 6.2,
+          "trials": 5
+        }
+      }
     }
   },
   "updated": "2026-03-11"
