@@ -209,6 +209,7 @@ const COLORS = [
 let DATA = null;
 let sortKey = 'score';
 let sortDir = -1;
+let chartsRendered = false;
 
 // Tabs
 document.querySelectorAll('.tab').forEach(tab => {
@@ -217,6 +218,10 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById(tab.dataset.tab).classList.add('active');
+    if (tab.dataset.tab === 'charts' && !chartsRendered && DATA) {
+      chartsRendered = true;
+      setTimeout(() => renderCharts(), 50);
+    }
   });
 });
 
@@ -224,7 +229,6 @@ async function init() {
   const resp = await fetch('results.json');
   DATA = await resp.json();
   renderTable();
-  renderCharts();
 }
 
 function shortName(id) { return id.includes('/') ? id.split('/').pop() : id; }
