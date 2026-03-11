@@ -924,6 +924,101 @@
         "meta": 41.0,
         "lexical": 53.3
       }
+    },
+    "anthropic/claude-sonnet-4.5": {
+      "score": 308,
+      "validity": 50.8,
+      "perfect_rate": 4.6,
+      "cost": 0.0,
+      "levels_tested": "3-15",
+      "trials_per_level": 5,
+      "level_details": {
+        "3": {
+          "validity": 73.3,
+          "perfect_rate": 20.0,
+          "avg_score": 2.8,
+          "trials": 5
+        },
+        "4": {
+          "validity": 60.0,
+          "perfect_rate": 20.0,
+          "avg_score": 3.2,
+          "trials": 5
+        },
+        "5": {
+          "validity": 68.0,
+          "perfect_rate": 20.0,
+          "avg_score": 4.4,
+          "trials": 5
+        },
+        "6": {
+          "validity": 63.3,
+          "perfect_rate": 0.0,
+          "avg_score": 3.8,
+          "trials": 5
+        },
+        "7": {
+          "validity": 57.1,
+          "perfect_rate": 0.0,
+          "avg_score": 4.0,
+          "trials": 5
+        },
+        "8": {
+          "validity": 32.5,
+          "perfect_rate": 0.0,
+          "avg_score": 2.6,
+          "trials": 5
+        },
+        "9": {
+          "validity": 64.4,
+          "perfect_rate": 0.0,
+          "avg_score": 5.8,
+          "trials": 5
+        },
+        "10": {
+          "validity": 36.0,
+          "perfect_rate": 0.0,
+          "avg_score": 3.6,
+          "trials": 5
+        },
+        "11": {
+          "validity": 52.7,
+          "perfect_rate": 0.0,
+          "avg_score": 5.8,
+          "trials": 5
+        },
+        "12": {
+          "validity": 38.3,
+          "perfect_rate": 0.0,
+          "avg_score": 4.6,
+          "trials": 5
+        },
+        "13": {
+          "validity": 49.2,
+          "perfect_rate": 0.0,
+          "avg_score": 6.4,
+          "trials": 5
+        },
+        "14": {
+          "validity": 55.7,
+          "perfect_rate": 0.0,
+          "avg_score": 7.8,
+          "trials": 5
+        },
+        "15": {
+          "validity": 46.6,
+          "perfect_rate": 0.0,
+          "avg_score": 6.8,
+          "trials": 5
+        }
+      },
+      "categories": {
+        "structural": 43.2,
+        "positional": 74.8,
+        "meta": 39.7,
+        "lexical": 50.3,
+        "relational": 50.0
+      }
     }
   },
   "updated": "2026-03-11"
