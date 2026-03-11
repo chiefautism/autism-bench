@@ -9,7 +9,7 @@
 
 *Write one sentence. Satisfy N rules. No LLM judge. Pure code verification.*
 
-[Leaderboard](#leaderboard) · [How It Works](#how-it-works) · [Quick Start](#quick-start) · [Results](#results) · [Citation](#citation)
+[**Live Leaderboard**](https://chiefautism.github.io/autism-bench/) · [How It Works](#how-it-works) · [Quick Start](#quick-start) · [Results](#results) · [Citation](#citation)
 
 </div>
 
