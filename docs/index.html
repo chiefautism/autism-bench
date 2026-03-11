@@ -180,22 +180,121 @@
 
   <!-- About -->
   <div class="panel" id="about">
-    <div style="max-width:700px;margin:32px auto;color:var(--text2);line-height:1.8">
+    <div style="max-width:800px;margin:32px auto;color:var(--text2);line-height:1.8">
+
       <h2 style="color:var(--text);margin-bottom:16px">How it works</h2>
-      <p>The model receives N constraints and must write <strong style="color:var(--text)">a single sentence</strong> that satisfies all of them simultaneously. Every constraint is verified by code &mdash; no LLM judge.</p>
-      <h3 style="color:var(--text);margin:24px 0 8px">Scoring</h3>
-      <p><strong style="color:var(--text)">+1</strong> per satisfied constraint. <strong style="color:var(--text)">&times;2 bonus</strong> if all constraints pass (perfect solve).</p>
-      <p><strong style="color:var(--text)">Validity</strong> = constraints passed / constraints attempted.</p>
-      <p><strong style="color:var(--text)">Perfect solve rate</strong> = tasks where every constraint passed.</p>
-      <h3 style="color:var(--text);margin:24px 0 8px">Constraint categories</h3>
-      <ul style="padding-left:20px">
-        <li><strong style="color:var(--text)">Structural</strong> &mdash; word count, char count, word length at position</li>
-        <li><strong style="color:var(--text)">Lexical</strong> &mdash; must contain color / animal / profession / digit</li>
-        <li><strong style="color:var(--text)">Positional</strong> &mdash; first word length, last word suffix, starts with letter</li>
-        <li><strong style="color:var(--text)">Relational</strong> &mdash; unique first letters, ascending length, acrostic</li>
-        <li><strong style="color:var(--text)">Meta</strong> &mdash; vowel count, unique letters, word length sum, forbidden letter</li>
+      <p>The model receives a prompt with N constraints and must write <strong style="color:var(--text)">a single sentence</strong> that satisfies all of them at once. Every constraint is checked by code. No LLM judge, no ambiguity, pure binary pass/fail.</p>
+
+      <h3 style="color:var(--text);margin:28px 0 12px">Example: Level 5</h3>
+      <p>The model gets this prompt:</p>
+      <pre style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;font-size:0.88em;color:var(--text);line-height:1.6">Write a single English sentence that satisfies ALL of the following constraints simultaneously.
+
+Constraints:
+1. The sentence must contain exactly 8 words
+2. The sentence must contain an animal name (e.g., cat, eagle, wolf)
+3. Every word must start with a different letter
+4. The sentence must contain exactly one number written as a digit
+5. The last word must end with the suffix "-ing"
+
+IMPORTANT:
+- Output ONLY the sentence, nothing else.
+- No explanations, no numbering, no quotes.</pre>
+
+      <p style="margin-top:12px">A valid answer:</p>
+      <pre style="background:#1a2332;border:1px solid var(--border);border-radius:8px;padding:16px;font-size:0.88em;color:var(--green);line-height:1.6">Big cats devoured 5 exotic fish near swimming</pre>
+
+      <p style="margin-top:12px">The validator checks each constraint independently:</p>
+      <pre style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;font-size:0.85em;color:var(--text);line-height:1.7"><span style="color:#3fb950">&#10004;</span> word_count: 8 words (expected 8)
+<span style="color:#3fb950">&#10004;</span> contains_animal: found "cats"
+<span style="color:#3fb950">&#10004;</span> unique_first_letters: B, c, d, 5, e, f, n, s (all unique)
+<span style="color:#3fb950">&#10004;</span> contains_number: found 1 digit
+<span style="color:#3fb950">&#10004;</span> last_word_suffix: "swimming" ends with "-ing"
+
+Result: 5/5 passed, PERFECT SOLVE (score: 10 = 5 x2 bonus)</pre>
+
+      <h3 style="color:var(--text);margin:28px 0 12px">Example: Level 10 (where it gets hard)</h3>
+      <pre style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;font-size:0.88em;color:var(--text);line-height:1.6">Constraints:
+1. The sentence must contain exactly 9 words
+2. The total number of characters (letters only) must be exactly 42
+3. The word at position 3 must start with the letter 'f'
+4. The sentence must contain a color name
+5. The sentence must contain a profession
+6. The first word must have exactly 4 letters
+7. Every word must start with a different letter
+8. The total number of vowels must be exactly 14
+9. The sentence must use at least 15 different letters
+10. The sentence must not contain the letter "z" anywhere</pre>
+      <p style="margin-top:12px">Now the model must juggle exact word count, exact character count, exact vowel count, positional rules, lexical requirements, and a forbidden letter - all within one sentence. This is where most models break.</p>
+
+      <h3 style="color:var(--text);margin:28px 0 12px">Why it's hard</h3>
+      <p>Each constraint alone is trivial. "Write 9 words" - easy. "Include a color" - easy. But satisfying 10+ constraints <strong style="color:var(--text)">simultaneously in a single sentence</strong> is a combinatorial search problem. Fix one constraint, break another. It's like juggling - each ball is light, but keeping 10 in the air is a different task entirely.</p>
+      <p>At level 15+, even frontier models pass only ~40-50% of constraints individually and almost never solve everything perfectly.</p>
+
+      <h3 style="color:var(--text);margin:28px 0 12px">Scoring</h3>
+      <p><strong style="color:var(--text)">+1 point</strong> per satisfied constraint.</p>
+      <p><strong style="color:var(--text)">&times;2 bonus</strong> if ALL constraints pass (perfect solve). So a level-10 perfect solve = 20 points, while passing 8/10 = just 8 points.</p>
+      <p><strong style="color:var(--text)">Validity</strong> = total constraints passed / total constraints attempted across all tasks.</p>
+      <p><strong style="color:var(--text)">Perfect solve rate</strong> = % of tasks where every single constraint was satisfied.</p>
+
+      <h3 style="color:var(--text);margin:28px 0 12px">Constraint categories</h3>
+
+      <div style="margin:12px 0">
+        <strong style="color:var(--accent)">Structural</strong> - hard numeric constraints on sentence shape
+        <pre style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;margin:8px 0;font-size:0.85em;color:var(--text)">word_count:        "The sentence must contain exactly 8 words"
+char_count:        "Total characters (letters only) must be exactly 42"
+word_length_at_pos: "The word at position 3 must have exactly 5 characters"
+all_words_min_len: "Every word must be at least 4 characters long"</pre>
+      </div>
+
+      <div style="margin:12px 0">
+        <strong style="color:var(--accent)">Lexical</strong> - sentence must include specific types of words
+        <pre style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;margin:8px 0;font-size:0.85em;color:var(--text)">contains_color:      "Must contain a color name (red, blue, green...)"
+contains_animal:     "Must contain an animal name (cat, eagle, wolf...)"
+contains_number:     "Must contain exactly one digit (0-9)"
+contains_profession: "Must contain a profession (doctor, pilot, chef...)"</pre>
+      </div>
+
+      <div style="margin:12px 0">
+        <strong style="color:var(--accent)">Positional</strong> - rules about specific word positions
+        <pre style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;margin:8px 0;font-size:0.85em;color:var(--text)">first_word_length:      "The first word must have exactly 5 letters"
+last_word_suffix:       "The last word must end with '-ing'"
+word_at_pos_starts_with: "The word at position 4 must start with 's'"</pre>
+      </div>
+
+      <div style="margin:12px 0">
+        <strong style="color:var(--accent)">Relational</strong> - constraints between words
+        <pre style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;margin:8px 0;font-size:0.85em;color:var(--text)">unique_first_letters: "Every word must start with a different letter"
+ascending_word_length: "Each word must be longer than the previous"
+first_letters_spell:  "First letters of all words must spell 'COLD'"</pre>
+      </div>
+
+      <div style="margin:12px 0">
+        <strong style="color:var(--accent)">Meta-structural</strong> - global numeric properties
+        <pre style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;margin:8px 0;font-size:0.85em;color:var(--text)">vowel_count:         "Total vowels (a,e,i,o,u) must be exactly 18"
+unique_letters_count: "Must use at least 16 different letters"
+word_length_sum:     "Sum of all word lengths must equal 45"
+no_letter:           "Must not contain the letter 'x' anywhere"</pre>
+      </div>
+
+      <h3 style="color:var(--text);margin:28px 0 12px">Difficulty scaling</h3>
+      <table style="width:100%;font-size:0.9em;border-collapse:collapse;margin:12px 0">
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px;color:var(--text);font-weight:600">Level 3-5</td><td style="padding:8px">Warm-up. Most models pass.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px;color:var(--text);font-weight:600">Level 6-10</td><td style="padding:8px">Non-reasoning models start failing.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px;color:var(--text);font-weight:600">Level 11-15</td><td style="padding:8px">Only strong models survive. Perfect solves become rare.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px;color:var(--text);font-weight:600">Level 16-20</td><td style="padding:8px">Frontier models only. Validity drops below 50%.</td></tr>
+        <tr><td style="padding:8px;color:var(--text);font-weight:600">Level 21-30</td><td style="padding:8px">Approaching NP-hard constraint satisfaction. No model survives.</td></tr>
+      </table>
+
+      <h3 style="color:var(--text);margin:28px 0 12px">Why this benchmark matters</h3>
+      <ul style="padding-left:20px;margin:12px 0">
+        <li><strong style="color:var(--text)">No LLM judge</strong> - every constraint is binary pass/fail via code. Zero judge bias.</li>
+        <li><strong style="color:var(--text)">No ceiling</strong> - add more constraints for harder tasks. Combinatorial explosion.</li>
+        <li><strong style="color:var(--text)">Contamination-resistant</strong> - random constraint combos with random params = infinite unique tasks.</li>
+        <li><strong style="color:var(--text)">Cheap</strong> - ~500 API calls per model, $2-5 total.</li>
+        <li><strong style="color:var(--text)">Tests what matters</strong> - planning, working memory, precision. The same skills needed for coding, legal docs, engineering specs.</li>
       </ul>
-      <p style="margin-top:24px">
+
+      <p style="margin-top:32px">
         <a href="https://github.com/chiefautism/autism-bench" style="color:var(--accent)">GitHub</a> &middot;
         <a href="https://x.com/chiefofautism" style="color:var(--accent)">𝕏 @chiefofautism</a> &middot;
         Created by <strong style="color:var(--text)">Chief of Autism</strong>
