@@ -61,32 +61,59 @@ def plot_leaderboard(results: dict, save_dir: str | None = None):
     names = [short_name(m) for m, _ in ranked]
     scores = [d["total_score"] for _, d in ranked]
     validity = [d["validity_ratio"] * 100 for _, d in ranked]
+    perfect = [d["perfect_solve_rate"] * 100 for _, d in ranked]
+    max_score = max(scores) if scores else 1
 
-    fig, ax = plt.subplots(figsize=(10, max(4, len(names) * 0.55)))
-
-    bars = ax.barh(
-        range(len(names)), scores,
-        color=PALETTE[:len(names)], edgecolor="white", linewidth=0.5, height=0.7,
+    fig, (ax_score, ax_val, ax_perf) = plt.subplots(
+        1, 3, figsize=(14, max(3.5, len(names) * 0.5)),
+        gridspec_kw={"width_ratios": [3, 1.2, 1.2], "wspace": 0.08},
     )
-    ax.set_yticks(range(len(names)))
-    ax.set_yticklabels(names, fontsize=11, fontweight="medium")
-    ax.invert_yaxis()
-    ax.set_xlabel("Total Score", fontsize=12, fontweight="medium")
 
-    for bar, score, val in zip(bars, scores, validity):
-        ax.text(
-            bar.get_width() + max(scores) * 0.015,
+    y = range(len(names))
+    colors = PALETTE[:len(names)]
+
+    # Score bars
+    bars = ax_score.barh(
+        y, scores, color=colors, edgecolor="white", linewidth=0.5, height=0.65,
+    )
+    ax_score.set_yticks(y)
+    ax_score.set_yticklabels(names, fontsize=11, fontweight="medium")
+    ax_score.invert_yaxis()
+    ax_score.set_xlabel("Total Score", fontsize=10, fontweight="medium")
+    ax_score.set_xlim(0, max_score * 1.22)
+    ax_score.grid(axis="x", alpha=0.3)
+    ax_score.grid(axis="y", visible=False)
+    for bar, score in zip(bars, scores):
+        ax_score.text(
+            bar.get_width() + max_score * 0.02,
             bar.get_y() + bar.get_height() / 2,
-            f"{score}  ({val:.0f}% valid)",
-            va="center", fontsize=9.5, color="#444444",
+            str(score), va="center", fontsize=10, fontweight="bold", color="#333",
         )
 
-    ax.set_xlim(0, max(scores) * 1.35)
-    ax.set_title("AutismBench Leaderboard", fontsize=16, fontweight="bold", pad=15)
-    ax.grid(axis="x", alpha=0.4)
-    ax.grid(axis="y", visible=False)
+    # Validity bars
+    ax_val.barh(y, validity, color=colors, edgecolor="white", linewidth=0.5, height=0.65, alpha=0.7)
+    ax_val.invert_yaxis()
+    ax_val.set_xlabel("Validity %", fontsize=10, fontweight="medium")
+    ax_val.set_xlim(0, 109)
+    ax_val.set_yticks([])
+    ax_val.grid(axis="x", alpha=0.3)
+    ax_val.grid(axis="y", visible=False)
+    for i, v in enumerate(validity):
+        ax_val.text(v + 1.5, i, f"{v:.0f}%", va="center", fontsize=9, color="#555")
 
-    fig.tight_layout()
+    # Perfect rate bars
+    ax_perf.barh(y, perfect, color=colors, edgecolor="white", linewidth=0.5, height=0.65, alpha=0.7)
+    ax_perf.invert_yaxis()
+    ax_perf.set_xlabel("Perfect %", fontsize=10, fontweight="medium")
+    ax_perf.set_xlim(0, max(max(perfect) * 1.4, 10))
+    ax_perf.set_yticks([])
+    ax_perf.grid(axis="x", alpha=0.3)
+    ax_perf.grid(axis="y", visible=False)
+    for i, p in enumerate(perfect):
+        ax_perf.text(p + 0.5, i, f"{p:.0f}%", va="center", fontsize=9, color="#555")
+
+    fig.suptitle("AutismBench Leaderboard", fontsize=16, fontweight="bold", y=1.02)
+    fig.subplots_adjust(left=0.12, right=0.97, top=0.88, bottom=0.15)
     if save_dir:
         fig.savefig(f"{save_dir}/leaderboard.png", dpi=200, bbox_inches="tight")
     return fig
@@ -97,9 +124,13 @@ def plot_difficulty_curve(results: dict, save_dir: str | None = None):
     ranked = sorted(models.items(), key=lambda x: x[1]["total_score"], reverse=True)
     levels = sorted(int(l) for l in list(models.values())[0]["levels"].keys())
 
-    fig, ax = plt.subplots(figsize=(11, 5.5))
+    # Split into meaningful vs broken models (validity > 5%)
+    active = [(m, d) for m, d in ranked if d["validity_ratio"] > 0.05]
+    broken = [(m, d) for m, d in ranked if d["validity_ratio"] <= 0.05]
 
-    for i, (model, data) in enumerate(ranked):
+    fig, ax = plt.subplots(figsize=(12, 5.5))
+
+    for i, (model, data) in enumerate(active):
         name = short_name(model)
         avg_scores = []
         for level in levels:
@@ -108,20 +139,36 @@ def plot_difficulty_curve(results: dict, save_dir: str | None = None):
 
         ax.plot(
             levels, avg_scores,
-            marker="o", markersize=5, linewidth=2.2,
+            marker="o", markersize=6, linewidth=2.5,
             color=PALETTE[i % len(PALETTE)],
-            label=name, alpha=0.9,
+            label=name, alpha=0.9, zorder=3,
         )
+        # Subtle fill only for top model
+        if i == 0:
+            ax.fill_between(levels, avg_scores, alpha=0.07, color=PALETTE[i % len(PALETTE)])
 
     ax.set_xlabel("Constraint Level", fontsize=12, fontweight="medium")
     ax.set_ylabel("Average Score", fontsize=12, fontweight="medium")
     ax.set_title("Difficulty Curve", fontsize=16, fontweight="bold", pad=15)
     ax.set_xticks(levels)
-    ax.legend(
-        loc="upper left", fontsize=9, framealpha=0.95,
-        edgecolor="#CCCCCC", ncol=2,
+    ax.grid(axis="both", alpha=0.3)
+    ax.grid(axis="y", visible=False)
+
+    legend = ax.legend(
+        loc="upper left", fontsize=9.5, framealpha=0.95,
+        edgecolor="#CCCCCC", ncol=1, borderpad=0.8,
+        handlelength=2.5,
     )
-    ax.grid(axis="both", alpha=0.4)
+    legend.get_frame().set_linewidth(0.5)
+
+    if broken:
+        broken_names = ", ".join(short_name(m) for m, _ in broken)
+        ax.text(
+            0.98, 0.02,
+            f"Not shown (parsing issues): {broken_names}",
+            transform=ax.transAxes, ha="right", va="bottom",
+            fontsize=8, color="#999999", style="italic",
+        )
 
     fig.tight_layout()
     if save_dir:
