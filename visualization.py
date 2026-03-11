@@ -43,9 +43,16 @@ def setup_style():
 
 # ── Data loading ─────────────────────────────────────────────────────────────
 
-def load_results(path: str) -> dict:
-    with open(path) as f:
-        return json.load(f)
+def load_results(paths: list[str]) -> dict:
+    """Load and merge results from one or more JSON files. Last file wins on duplicates."""
+    merged = {"models": {}, "config": {}}
+    for path in paths:
+        with open(path) as f:
+            data = json.load(f)
+        merged["config"] = data.get("config", merged["config"])
+        for model_id, mdata in data["models"].items():
+            merged["models"][model_id] = mdata
+    return merged
 
 
 def short_name(model_id: str) -> str:
@@ -330,7 +337,7 @@ def plot_category_breakdown(results: dict, save_dir: str | None = None):
 
 def main():
     parser = argparse.ArgumentParser(description="AutismBench - Visualization")
-    parser.add_argument("results_file", help="Path to results JSON file")
+    parser.add_argument("results_files", nargs="+", help="Path(s) to results JSON files")
     parser.add_argument("--save", action="store_true", help="Save plots to ./assets/")
     parser.add_argument("--output-dir", type=str, default="assets", help="Output directory")
     parser.add_argument("--no-show", action="store_true", help="Don't show interactive plots")
@@ -340,7 +347,7 @@ def main():
         matplotlib.use("Agg")
 
     setup_style()
-    results = load_results(args.results_file)
+    results = load_results(args.results_files)
 
     save_dir = None
     if args.save:
