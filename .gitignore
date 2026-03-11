@@ -1,0 +1,40 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Results (regenerated per run)
+results/
+
+# Plots
+plots/
+dashboard.html
+
+# NLTK data
+nltk_data/
+
+# Jupyter
+.ipynb_checkpoints/
