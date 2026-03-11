@@ -1,6 +1,6 @@
 <div align="center">
 
-# AutismBench
+# 🧩 AutismBench
 
 **Constraint satisfaction benchmark for large language models.**
 
