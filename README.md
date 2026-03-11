@@ -28,17 +28,22 @@ Levels 3-15 | 5 trials per level | temperature 0.0
 
 | # | Model | Score | Validity | Perfect Solve |
 |---|-------|------:|:--------:|:-------------:|
-| 1 | llama-4-maverick | 322 | 52.7% | 6.2% |
-| 2 | gpt-4.1 | 315 | 52.0% | 4.6% |
-| 3 | claude-sonnet-4.5 | 308 | 50.8% | 4.6% |
-| 4 | gpt-4.1-nano | 270 | 45.8% | 1.5% |
-| 5 | claude-sonnet-4.6 | 253 | 39.9% | 7.7% |
-| 6 | deepseek-v3.2 | 251 | 43.0% | 0.0% |
-| 7 | deepseek-r1 | 245 | 33.5% | 16.9% |
-| 8 | o3 | 12 | 1.0% | 3.1% |
-| 9 | o4-mini | 6 | 0.5% | 1.5% |
+| 1 | qwen3-235b-a22b | 400 | 59.8% | 16.9% |
+| 2 | llama-4-maverick | 322 | 52.7% | 6.2% |
+| 3 | gpt-4.1 | 315 | 52.0% | 4.6% |
+| 4 | claude-sonnet-4.5 | 308 | 50.8% | 4.6% |
+| 5 | claude-haiku-4.5 | 303 | 50.9% | 3.1% |
+| 6 | gpt-4.1-nano | 270 | 45.8% | 1.5% |
+| 7 | llama-4-scout | 259 | 43.2% | 3.1% |
+| 8 | claude-sonnet-4.6 | 253 | 39.9% | 7.7% |
+| 9 | deepseek-v3.2 | 251 | 43.0% | 0.0% |
+| 10 | mistral-large-2512 | 246 | 39.7% | 6.2% |
+| 11 | deepseek-r1 | 245 | 33.5% | 16.9% |
+| 12 | gemini-3.1-pro-preview | 183 | 28.8% | 6.2% |
+| 13 | o3 | 12 | 1.0% | 3.1% |
+| 14 | o4-mini | 6 | 0.5% | 1.5% |
 
-> **Note:** o3 and o4-mini score near zero due to response format issues - their reasoning output breaks sentence extraction. This is a known issue being investigated.
+> **Note:** o3, o4-mini, and gemini-2.5-pro score near zero due to response format issues - their reasoning output breaks sentence extraction. This is a known issue being investigated.
 
 <details>
 <summary>Additional models (levels 3-10)</summary>

@@ -1114,6 +1114,576 @@
           "trials": 5
         }
       }
+    },
+    "google/gemini-2.5-pro": {
+      "score": 20,
+      "validity": 2.9,
+      "perfect_rate": 1.5,
+      "cost": 0.0,
+      "levels_tested": "3-15",
+      "trials_per_level": 5,
+      "categories": {
+        "structural": 1.4,
+        "relational": 2.8,
+        "meta": 7.8,
+        "lexical": 1.4,
+        "positional": 1.1
+      },
+      "level_details": {
+        "3": {
+          "validity": 33.3,
+          "perfect_rate": 20.0,
+          "avg_score": 1.6,
+          "trials": 5
+        },
+        "4": {
+          "validity": 0.0,
+          "perfect_rate": 0.0,
+          "avg_score": 0.0,
+          "trials": 5
+        },
+        "5": {
+          "validity": 0.0,
+          "perfect_rate": 0.0,
+          "avg_score": 0.0,
+          "trials": 5
+        },
+        "6": {
+          "validity": 0.0,
+          "perfect_rate": 0.0,
+          "avg_score": 0.0,
+          "trials": 5
+        },
+        "7": {
+          "validity": 2.9,
+          "perfect_rate": 0.0,
+          "avg_score": 0.2,
+          "trials": 5
+        },
+        "8": {
+          "validity": 2.5,
+          "perfect_rate": 0.0,
+          "avg_score": 0.2,
+          "trials": 5
+        },
+        "9": {
+          "validity": 6.7,
+          "perfect_rate": 0.0,
+          "avg_score": 0.6,
+          "trials": 5
+        },
+        "10": {
+          "validity": 0.0,
+          "perfect_rate": 0.0,
+          "avg_score": 0.0,
+          "trials": 5
+        },
+        "11": {
+          "validity": 0.0,
+          "perfect_rate": 0.0,
+          "avg_score": 0.0,
+          "trials": 5
+        },
+        "12": {
+          "validity": 0.0,
+          "perfect_rate": 0.0,
+          "avg_score": 0.0,
+          "trials": 5
+        },
+        "13": {
+          "validity": 3.1,
+          "perfect_rate": 0.0,
+          "avg_score": 0.4,
+          "trials": 5
+        },
+        "14": {
+          "validity": 5.7,
+          "perfect_rate": 0.0,
+          "avg_score": 0.8,
+          "trials": 5
+        },
+        "15": {
+          "validity": 1.4,
+          "perfect_rate": 0.0,
+          "avg_score": 0.2,
+          "trials": 5
+        }
+      }
+    },
+    "qwen/qwen3-235b-a22b": {
+      "score": 400,
+      "validity": 59.8,
+      "perfect_rate": 16.9,
+      "cost": 0.0,
+      "levels_tested": "3-15",
+      "trials_per_level": 5,
+      "categories": {
+        "structural": 60.4,
+        "lexical": 59.9,
+        "positional": 86.5,
+        "meta": 45.2,
+        "relational": 48.4
+      },
+      "level_details": {
+        "3": {
+          "validity": 93.3,
+          "perfect_rate": 80.0,
+          "avg_score": 5.2,
+          "trials": 5
+        },
+        "4": {
+          "validity": 80.0,
+          "perfect_rate": 40.0,
+          "avg_score": 4.8,
+          "trials": 5
+        },
+        "5": {
+          "validity": 88.0,
+          "perfect_rate": 40.0,
+          "avg_score": 6.4,
+          "trials": 5
+        },
+        "6": {
+          "validity": 60.0,
+          "perfect_rate": 20.0,
+          "avg_score": 4.8,
+          "trials": 5
+        },
+        "7": {
+          "validity": 40.0,
+          "perfect_rate": 20.0,
+          "avg_score": 4.2,
+          "trials": 5
+        },
+        "8": {
+          "validity": 72.5,
+          "perfect_rate": 20.0,
+          "avg_score": 7.4,
+          "trials": 5
+        },
+        "9": {
+          "validity": 66.7,
+          "perfect_rate": 0.0,
+          "avg_score": 6.0,
+          "trials": 5
+        },
+        "10": {
+          "validity": 62.0,
+          "perfect_rate": 0.0,
+          "avg_score": 6.2,
+          "trials": 5
+        },
+        "11": {
+          "validity": 60.0,
+          "perfect_rate": 0.0,
+          "avg_score": 6.6,
+          "trials": 5
+        },
+        "12": {
+          "validity": 53.3,
+          "perfect_rate": 0.0,
+          "avg_score": 6.4,
+          "trials": 5
+        },
+        "13": {
+          "validity": 52.3,
+          "perfect_rate": 0.0,
+          "avg_score": 6.8,
+          "trials": 5
+        },
+        "14": {
+          "validity": 54.3,
+          "perfect_rate": 0.0,
+          "avg_score": 7.6,
+          "trials": 5
+        },
+        "15": {
+          "validity": 51.4,
+          "perfect_rate": 0.0,
+          "avg_score": 7.6,
+          "trials": 5
+        }
+      }
+    },
+    "mistralai/mistral-large-2512": {
+      "score": 246,
+      "validity": 39.7,
+      "perfect_rate": 6.2,
+      "cost": 0.0,
+      "levels_tested": "3-15",
+      "trials_per_level": 5,
+      "categories": {
+        "structural": 23.0,
+        "meta": 47.1,
+        "positional": 50.5,
+        "relational": 25.8,
+        "lexical": 49.3
+      },
+      "level_details": {
+        "3": {
+          "validity": 73.3,
+          "perfect_rate": 40.0,
+          "avg_score": 3.4,
+          "trials": 5
+        },
+        "4": {
+          "validity": 65.0,
+          "perfect_rate": 40.0,
+          "avg_score": 4.2,
+          "trials": 5
+        },
+        "5": {
+          "validity": 52.0,
+          "perfect_rate": 0.0,
+          "avg_score": 2.6,
+          "trials": 5
+        },
+        "6": {
+          "validity": 43.3,
+          "perfect_rate": 0.0,
+          "avg_score": 2.6,
+          "trials": 5
+        },
+        "7": {
+          "validity": 45.7,
+          "perfect_rate": 0.0,
+          "avg_score": 3.2,
+          "trials": 5
+        },
+        "8": {
+          "validity": 50.0,
+          "perfect_rate": 0.0,
+          "avg_score": 4.0,
+          "trials": 5
+        },
+        "9": {
+          "validity": 44.4,
+          "perfect_rate": 0.0,
+          "avg_score": 4.0,
+          "trials": 5
+        },
+        "10": {
+          "validity": 32.0,
+          "perfect_rate": 0.0,
+          "avg_score": 3.2,
+          "trials": 5
+        },
+        "11": {
+          "validity": 34.5,
+          "perfect_rate": 0.0,
+          "avg_score": 3.8,
+          "trials": 5
+        },
+        "12": {
+          "validity": 36.7,
+          "perfect_rate": 0.0,
+          "avg_score": 4.4,
+          "trials": 5
+        },
+        "13": {
+          "validity": 30.8,
+          "perfect_rate": 0.0,
+          "avg_score": 4.0,
+          "trials": 5
+        },
+        "14": {
+          "validity": 37.1,
+          "perfect_rate": 0.0,
+          "avg_score": 5.2,
+          "trials": 5
+        },
+        "15": {
+          "validity": 31.1,
+          "perfect_rate": 0.0,
+          "avg_score": 4.6,
+          "trials": 5
+        }
+      }
+    },
+    "meta-llama/llama-4-scout": {
+      "score": 259,
+      "validity": 43.2,
+      "perfect_rate": 3.1,
+      "cost": 0.0,
+      "levels_tested": "3-15",
+      "trials_per_level": 5,
+      "categories": {
+        "structural": 51.0,
+        "meta": 43.8,
+        "positional": 56.9,
+        "relational": 14.3,
+        "lexical": 39.3
+      },
+      "level_details": {
+        "3": {
+          "validity": 66.7,
+          "perfect_rate": 20.0,
+          "avg_score": 2.6,
+          "trials": 5
+        },
+        "4": {
+          "validity": 70.0,
+          "perfect_rate": 20.0,
+          "avg_score": 3.6,
+          "trials": 5
+        },
+        "5": {
+          "validity": 40.0,
+          "perfect_rate": 0.0,
+          "avg_score": 2.0,
+          "trials": 5
+        },
+        "6": {
+          "validity": 50.0,
+          "perfect_rate": 0.0,
+          "avg_score": 3.0,
+          "trials": 5
+        },
+        "7": {
+          "validity": 51.4,
+          "perfect_rate": 0.0,
+          "avg_score": 3.6,
+          "trials": 5
+        },
+        "8": {
+          "validity": 45.0,
+          "perfect_rate": 0.0,
+          "avg_score": 3.6,
+          "trials": 5
+        },
+        "9": {
+          "validity": 44.4,
+          "perfect_rate": 0.0,
+          "avg_score": 4.0,
+          "trials": 5
+        },
+        "10": {
+          "validity": 42.0,
+          "perfect_rate": 0.0,
+          "avg_score": 4.2,
+          "trials": 5
+        },
+        "11": {
+          "validity": 45.5,
+          "perfect_rate": 0.0,
+          "avg_score": 5.0,
+          "trials": 5
+        },
+        "12": {
+          "validity": 43.3,
+          "perfect_rate": 0.0,
+          "avg_score": 5.2,
+          "trials": 5
+        },
+        "13": {
+          "validity": 35.4,
+          "perfect_rate": 0.0,
+          "avg_score": 4.6,
+          "trials": 5
+        },
+        "14": {
+          "validity": 35.7,
+          "perfect_rate": 0.0,
+          "avg_score": 5.0,
+          "trials": 5
+        },
+        "15": {
+          "validity": 37.0,
+          "perfect_rate": 0.0,
+          "avg_score": 5.4,
+          "trials": 5
+        }
+      }
+    },
+    "anthropic/claude-haiku-4.5": {
+      "score": 303,
+      "validity": 50.9,
+      "perfect_rate": 3.1,
+      "cost": 0.0,
+      "levels_tested": "3-15",
+      "trials_per_level": 5,
+      "categories": {
+        "structural": 34.7,
+        "meta": 47.7,
+        "lexical": 62.4,
+        "relational": 37.3,
+        "positional": 72.4
+      },
+      "level_details": {
+        "3": {
+          "validity": 73.3,
+          "perfect_rate": 40.0,
+          "avg_score": 3.4,
+          "trials": 5
+        },
+        "4": {
+          "validity": 45.0,
+          "perfect_rate": 0.0,
+          "avg_score": 1.8,
+          "trials": 5
+        },
+        "5": {
+          "validity": 72.0,
+          "perfect_rate": 0.0,
+          "avg_score": 3.6,
+          "trials": 5
+        },
+        "6": {
+          "validity": 50.0,
+          "perfect_rate": 0.0,
+          "avg_score": 3.0,
+          "trials": 5
+        },
+        "7": {
+          "validity": 60.0,
+          "perfect_rate": 0.0,
+          "avg_score": 4.2,
+          "trials": 5
+        },
+        "8": {
+          "validity": 45.0,
+          "perfect_rate": 0.0,
+          "avg_score": 3.6,
+          "trials": 5
+        },
+        "9": {
+          "validity": 44.4,
+          "perfect_rate": 0.0,
+          "avg_score": 4.0,
+          "trials": 5
+        },
+        "10": {
+          "validity": 60.0,
+          "perfect_rate": 0.0,
+          "avg_score": 6.0,
+          "trials": 5
+        },
+        "11": {
+          "validity": 52.7,
+          "perfect_rate": 0.0,
+          "avg_score": 5.8,
+          "trials": 5
+        },
+        "12": {
+          "validity": 53.3,
+          "perfect_rate": 0.0,
+          "avg_score": 6.4,
+          "trials": 5
+        },
+        "13": {
+          "validity": 47.7,
+          "perfect_rate": 0.0,
+          "avg_score": 6.2,
+          "trials": 5
+        },
+        "14": {
+          "validity": 45.7,
+          "perfect_rate": 0.0,
+          "avg_score": 6.4,
+          "trials": 5
+        },
+        "15": {
+          "validity": 42.5,
+          "perfect_rate": 0.0,
+          "avg_score": 6.2,
+          "trials": 5
+        }
+      }
+    },
+    "google/gemini-3.1-pro-preview": {
+      "score": 183,
+      "validity": 28.8,
+      "perfect_rate": 6.2,
+      "cost": 0.0,
+      "levels_tested": "3-15",
+      "trials_per_level": 5,
+      "categories": {
+        "structural": 28.3,
+        "lexical": 18.2,
+        "meta": 38.7,
+        "relational": 26.0,
+        "positional": 32.3
+      },
+      "level_details": {
+        "3": {
+          "validity": 73.3,
+          "perfect_rate": 60.0,
+          "avg_score": 4.0,
+          "trials": 5
+        },
+        "4": {
+          "validity": 45.0,
+          "perfect_rate": 0.0,
+          "avg_score": 1.8,
+          "trials": 5
+        },
+        "5": {
+          "validity": 40.0,
+          "perfect_rate": 0.0,
+          "avg_score": 2.0,
+          "trials": 5
+        },
+        "6": {
+          "validity": 40.0,
+          "perfect_rate": 20.0,
+          "avg_score": 3.6,
+          "trials": 5
+        },
+        "7": {
+          "validity": 28.6,
+          "perfect_rate": 0.0,
+          "avg_score": 2.0,
+          "trials": 5
+        },
+        "8": {
+          "validity": 40.0,
+          "perfect_rate": 0.0,
+          "avg_score": 3.2,
+          "trials": 5
+        },
+        "9": {
+          "validity": 37.8,
+          "perfect_rate": 0.0,
+          "avg_score": 3.4,
+          "trials": 5
+        },
+        "10": {
+          "validity": 22.0,
+          "perfect_rate": 0.0,
+          "avg_score": 2.2,
+          "trials": 5
+        },
+        "11": {
+          "validity": 25.5,
+          "perfect_rate": 0.0,
+          "avg_score": 2.8,
+          "trials": 5
+        },
+        "12": {
+          "validity": 15.0,
+          "perfect_rate": 0.0,
+          "avg_score": 1.8,
+          "trials": 5
+        },
+        "13": {
+          "validity": 21.5,
+          "perfect_rate": 0.0,
+          "avg_score": 2.8,
+          "trials": 5
+        },
+        "14": {
+          "validity": 21.4,
+          "perfect_rate": 0.0,
+          "avg_score": 3.0,
+          "trials": 5
+        },
+        "15": {
+          "validity": 27.0,
+          "perfect_rate": 0.0,
+          "avg_score": 4.0,
+          "trials": 5
+        }
+      }
     }
   },
   "updated": "2026-03-11"
