@@ -55,10 +55,14 @@ Levels 3-15 | 5 trials per level | temperature 0.0
 
 ![Difficulty Curve](assets/difficulty_curve.png)
 
-<details>
-<summary>Validity heatmap (model × level)</summary>
-
 ![Heatmap](assets/heatmap.png)
+
+<details>
+<summary>More charts</summary>
+
+![Perfect Solve Rate](assets/perfect_rate.png)
+
+![Category Breakdown](assets/categories.png)
 
 </details>
 

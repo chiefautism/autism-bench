@@ -2,7 +2,7 @@
 """
 AutismBench - Visualization.
 
-Generate interactive leaderboard and analysis from results JSON using Plotly.
+Generate publication-quality charts from results JSON.
 
 Usage:
     python visualization.py results/autism_bench_results_*.json
@@ -11,12 +11,37 @@ Usage:
 
 import json
 import argparse
-import sys
+import os
 
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import plotly.express as px
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+import seaborn as sns
+import numpy as np
 
+
+# ── Style ────────────────────────────────────────────────────────────────────
+
+PALETTE = [
+    "#4361EE", "#F72585", "#4CC9F0", "#7209B7", "#3A0CA3",
+    "#F77F00", "#06D6A0", "#EF476F", "#118AB2", "#073B4C",
+]
+
+def setup_style():
+    sns.set_theme(style="whitegrid", font_scale=1.05)
+    plt.rcParams.update({
+        "figure.facecolor": "#FAFAFA",
+        "axes.facecolor": "#FAFAFA",
+        "axes.edgecolor": "#CCCCCC",
+        "grid.color": "#E8E8E8",
+        "grid.linewidth": 0.6,
+        "font.family": "sans-serif",
+        "axes.spines.top": False,
+        "axes.spines.right": False,
+    })
+
+
+# ── Data loading ─────────────────────────────────────────────────────────────
 
 def load_results(path: str) -> dict:
     with open(path) as f:
@@ -27,93 +52,53 @@ def short_name(model_id: str) -> str:
     return model_id.split("/")[-1] if "/" in model_id else model_id
 
 
-def build_dashboard(results: dict) -> go.Figure:
-    """Build a single-page interactive dashboard with all charts."""
-    models = results["models"]
-    config = results["config"]
+# ── Charts ───────────────────────────────────────────────────────────────────
 
+def plot_leaderboard(results: dict, save_dir: str | None = None):
+    models = results["models"]
     ranked = sorted(models.items(), key=lambda x: x[1]["total_score"], reverse=True)
+
     names = [short_name(m) for m, _ in ranked]
+    scores = [d["total_score"] for _, d in ranked]
+    validity = [d["validity_ratio"] * 100 for _, d in ranked]
+
+    fig, ax = plt.subplots(figsize=(10, max(4, len(names) * 0.55)))
+
+    bars = ax.barh(
+        range(len(names)), scores,
+        color=PALETTE[:len(names)], edgecolor="white", linewidth=0.5, height=0.7,
+    )
+    ax.set_yticks(range(len(names)))
+    ax.set_yticklabels(names, fontsize=11, fontweight="medium")
+    ax.invert_yaxis()
+    ax.set_xlabel("Total Score", fontsize=12, fontweight="medium")
+
+    for bar, score, val in zip(bars, scores, validity):
+        ax.text(
+            bar.get_width() + max(scores) * 0.015,
+            bar.get_y() + bar.get_height() / 2,
+            f"{score}  ({val:.0f}% valid)",
+            va="center", fontsize=9.5, color="#444444",
+        )
+
+    ax.set_xlim(0, max(scores) * 1.35)
+    ax.set_title("AutismBench Leaderboard", fontsize=16, fontweight="bold", pad=15)
+    ax.grid(axis="x", alpha=0.4)
+    ax.grid(axis="y", visible=False)
+
+    fig.tight_layout()
+    if save_dir:
+        fig.savefig(f"{save_dir}/leaderboard.png", dpi=200, bbox_inches="tight")
+    return fig
+
+
+def plot_difficulty_curve(results: dict, save_dir: str | None = None):
+    models = results["models"]
+    ranked = sorted(models.items(), key=lambda x: x[1]["total_score"], reverse=True)
     levels = sorted(int(l) for l in list(models.values())[0]["levels"].keys())
 
-    fig = make_subplots(
-        rows=3, cols=2,
-        subplot_titles=(
-            "Leaderboard (Total Score)",
-            "Perfect Solve Rate (%)",
-            "Validity Ratio by Level",
-            "Difficulty Curve (Avg Score)",
-            "Category Breakdown (Pass Rate %)",
-            "Score Distribution",
-        ),
-        vertical_spacing=0.08,
-        horizontal_spacing=0.08,
-        specs=[
-            [{"type": "bar"}, {"type": "bar"}],
-            [{"type": "heatmap"}, {"type": "scatter"}],
-            [{"type": "bar"}, {"type": "box"}],
-        ],
-    )
+    fig, ax = plt.subplots(figsize=(11, 5.5))
 
-    # Color palette
-    colors = px.colors.qualitative.Set2
-
-    # 1. Leaderboard bar chart
-    scores = [d["total_score"] for _, d in ranked]
-    bar_colors = [colors[i % len(colors)] for i in range(len(names))]
-    fig.add_trace(
-        go.Bar(
-            y=names, x=scores, orientation="h",
-            marker_color=bar_colors,
-            text=scores, textposition="outside",
-            showlegend=False,
-        ),
-        row=1, col=1,
-    )
-
-    # 2. Perfect solve rate
-    perf_ranked = sorted(ranked, key=lambda x: x[1]["perfect_solve_rate"], reverse=True)
-    perf_names = [short_name(m) for m, _ in perf_ranked]
-    perf_rates = [d["perfect_solve_rate"] * 100 for _, d in perf_ranked]
-    fig.add_trace(
-        go.Bar(
-            y=perf_names, x=perf_rates, orientation="h",
-            marker_color=[colors[i % len(colors)] for i in range(len(perf_names))],
-            text=[f"{r:.1f}%" for r in perf_rates], textposition="outside",
-            showlegend=False,
-        ),
-        row=1, col=2,
-    )
-
-    # 3. Validity heatmap
-    matrix = []
-    for _, data in ranked:
-        row = []
-        for level in levels:
-            lvl_data = data["levels"].get(str(level), {})
-            trials = lvl_data.get("trials", [])
-            if trials:
-                total_p = sum(t["passed"] for t in trials)
-                total_c = sum(t["total"] for t in trials)
-                ratio = total_p / total_c if total_c else 0
-            else:
-                ratio = 0
-            row.append(round(ratio * 100, 1))
-        matrix.append(row)
-
-    fig.add_trace(
-        go.Heatmap(
-            z=matrix, x=[str(l) for l in levels], y=names,
-            colorscale="RdYlGn", zmin=0, zmax=100,
-            text=[[f"{v:.0f}%" for v in row] for row in matrix],
-            texttemplate="%{text}", textfont={"size": 9},
-            colorbar=dict(title="Valid %", x=0.46, len=0.3, y=0.5),
-            showscale=True,
-        ),
-        row=2, col=1,
-    )
-
-    # 4. Difficulty curve
     for i, (model, data) in enumerate(ranked):
         name = short_name(model)
         avg_scores = []
@@ -121,18 +106,123 @@ def build_dashboard(results: dict) -> go.Figure:
             lvl_data = data["levels"].get(str(level), {})
             avg_scores.append(lvl_data.get("avg_score", 0))
 
-        fig.add_trace(
-            go.Scatter(
-                x=levels, y=avg_scores, mode="lines+markers",
-                name=name, marker=dict(size=5),
-                line=dict(color=colors[i % len(colors)], width=2),
-                legendgroup=name,
-            ),
-            row=2, col=2,
+        ax.plot(
+            levels, avg_scores,
+            marker="o", markersize=5, linewidth=2.2,
+            color=PALETTE[i % len(PALETTE)],
+            label=name, alpha=0.9,
         )
 
-    # 5. Category breakdown
+    ax.set_xlabel("Constraint Level", fontsize=12, fontweight="medium")
+    ax.set_ylabel("Average Score", fontsize=12, fontweight="medium")
+    ax.set_title("Difficulty Curve", fontsize=16, fontweight="bold", pad=15)
+    ax.set_xticks(levels)
+    ax.legend(
+        loc="upper left", fontsize=9, framealpha=0.95,
+        edgecolor="#CCCCCC", ncol=2,
+    )
+    ax.grid(axis="both", alpha=0.4)
+
+    fig.tight_layout()
+    if save_dir:
+        fig.savefig(f"{save_dir}/difficulty_curve.png", dpi=200, bbox_inches="tight")
+    return fig
+
+
+def plot_heatmap(results: dict, save_dir: str | None = None):
+    models = results["models"]
+    ranked = sorted(models.items(), key=lambda x: x[1]["total_score"], reverse=True)
+    names = [short_name(m) for m, _ in ranked]
+    levels = sorted(int(l) for l in list(models.values())[0]["levels"].keys())
+
+    matrix = []
+    for _, data in ranked:
+        row = []
+        for level in levels:
+            trials = data["levels"].get(str(level), {}).get("trials", [])
+            if trials:
+                tp = sum(t["passed"] for t in trials)
+                tc = sum(t["total"] for t in trials)
+                row.append(tp / tc * 100 if tc else 0)
+            else:
+                row.append(0)
+        matrix.append(row)
+
+    matrix = np.array(matrix)
+
+    fig, ax = plt.subplots(figsize=(max(9, len(levels) * 0.7), max(4, len(names) * 0.6)))
+
+    sns.heatmap(
+        matrix, ax=ax,
+        xticklabels=[str(l) for l in levels],
+        yticklabels=names,
+        cmap="RdYlGn", vmin=0, vmax=100,
+        annot=True, fmt=".0f", annot_kws={"size": 9},
+        linewidths=1.5, linecolor="#FAFAFA",
+        cbar_kws={"label": "Validity %", "shrink": 0.8},
+    )
+
+    ax.set_xlabel("Constraint Level", fontsize=12, fontweight="medium")
+    ax.set_title("Validity Ratio (% constraints passed)", fontsize=16, fontweight="bold", pad=15)
+    ax.tick_params(axis="y", labelsize=11)
+
+    fig.tight_layout()
+    if save_dir:
+        fig.savefig(f"{save_dir}/heatmap.png", dpi=200, bbox_inches="tight")
+    return fig
+
+
+def plot_perfect_rate(results: dict, save_dir: str | None = None):
+    models = results["models"]
+    ranked = sorted(models.items(), key=lambda x: x[1]["total_score"], reverse=True)
+    levels = sorted(int(l) for l in list(models.values())[0]["levels"].keys())
+
+    fig, ax = plt.subplots(figsize=(11, 5.5))
+
+    bar_width = 0.8 / len(ranked)
+    x = np.arange(len(levels))
+
+    for i, (model, data) in enumerate(ranked):
+        name = short_name(model)
+        rates = []
+        for level in levels:
+            trials = data["levels"].get(str(level), {}).get("trials", [])
+            if trials:
+                perfect = sum(1 for t in trials if t["perfect"])
+                rates.append(perfect / len(trials) * 100)
+            else:
+                rates.append(0)
+
+        ax.bar(
+            x + i * bar_width, rates, bar_width,
+            label=name, color=PALETTE[i % len(PALETTE)],
+            edgecolor="white", linewidth=0.3, alpha=0.9,
+        )
+
+    ax.set_xlabel("Constraint Level", fontsize=12, fontweight="medium")
+    ax.set_ylabel("Perfect Solve Rate (%)", fontsize=12, fontweight="medium")
+    ax.set_title("Perfect Solve Rate by Level", fontsize=16, fontweight="bold", pad=15)
+    ax.set_xticks(x + bar_width * len(ranked) / 2)
+    ax.set_xticklabels([str(l) for l in levels])
+    ax.set_ylim(0, 105)
+    ax.legend(
+        loc="upper right", fontsize=8, framealpha=0.95,
+        edgecolor="#CCCCCC", ncol=2,
+    )
+    ax.grid(axis="y", alpha=0.4)
+    ax.grid(axis="x", visible=False)
+
+    fig.tight_layout()
+    if save_dir:
+        fig.savefig(f"{save_dir}/perfect_rate.png", dpi=200, bbox_inches="tight")
+    return fig
+
+
+def plot_category_breakdown(results: dict, save_dir: str | None = None):
     from constraint_pool import get_constraint_by_id
+
+    models = results["models"]
+    ranked = sorted(models.items(), key=lambda x: x[1]["total_score"], reverse=True)
 
     categories = set()
     model_cat_stats = {}
@@ -143,8 +233,7 @@ def build_dashboard(results: dict) -> go.Figure:
         for lvl_data in data["levels"].values():
             for trial in lvl_data["trials"]:
                 for r in trial["results"]:
-                    cid = r["constraint_id"]
-                    c = get_constraint_by_id(cid)
+                    c = get_constraint_by_id(r["constraint_id"])
                     if c:
                         cat = c["category"]
                         categories.add(cat)
@@ -157,77 +246,72 @@ def build_dashboard(results: dict) -> go.Figure:
         }
 
     categories = sorted(categories)
+
+    fig, ax = plt.subplots(figsize=(12, 5.5))
+
+    bar_width = 0.8 / len(ranked)
+    x = np.arange(len(categories))
+
     for i, (model, _) in enumerate(ranked):
         name = short_name(model)
-        vals = [round(model_cat_stats[model].get(cat, 0), 1) for cat in categories]
-        fig.add_trace(
-            go.Bar(
-                x=categories, y=vals, name=name,
-                marker_color=colors[i % len(colors)],
-                legendgroup=name, showlegend=False,
-            ),
-            row=3, col=1,
+        vals = [model_cat_stats[model].get(cat, 0) for cat in categories]
+        ax.bar(
+            x + i * bar_width, vals, bar_width,
+            label=name, color=PALETTE[i % len(PALETTE)],
+            edgecolor="white", linewidth=0.3, alpha=0.9,
         )
 
-    # 6. Score distribution (box plot per model)
-    for i, (model, data) in enumerate(ranked):
-        name = short_name(model)
-        all_scores = []
-        for lvl_data in data["levels"].values():
-            for trial in lvl_data["trials"]:
-                all_scores.append(trial["score"])
-
-        fig.add_trace(
-            go.Box(
-                y=all_scores, name=name,
-                marker_color=colors[i % len(colors)],
-                legendgroup=name, showlegend=False,
-            ),
-            row=3, col=2,
-        )
-
-    # Layout
-    fig.update_layout(
-        title=dict(
-            text="AutismBench - Results Dashboard",
-            font=dict(size=22),
-        ),
-        height=1400,
-        width=1200,
-        template="plotly_white",
-        legend=dict(
-            orientation="h", yanchor="bottom", y=0.35, xanchor="center", x=0.75,
-            font=dict(size=10),
-        ),
-        barmode="group",
+    ax.set_ylabel("Pass Rate (%)", fontsize=12, fontweight="medium")
+    ax.set_title("Pass Rate by Constraint Category", fontsize=16, fontweight="bold", pad=15)
+    ax.set_xticks(x + bar_width * len(ranked) / 2)
+    ax.set_xticklabels([c.capitalize() for c in categories], fontsize=11)
+    ax.set_ylim(0, 105)
+    ax.legend(
+        loc="upper right", fontsize=8, framealpha=0.95,
+        edgecolor="#CCCCCC", ncol=2,
     )
+    ax.grid(axis="y", alpha=0.4)
+    ax.grid(axis="x", visible=False)
 
-    fig.update_yaxes(autorange="reversed", row=1, col=1)
-    fig.update_yaxes(autorange="reversed", row=1, col=2)
-    fig.update_yaxes(autorange="reversed", row=2, col=1)
-    fig.update_xaxes(title_text="Level", row=2, col=2)
-    fig.update_yaxes(title_text="Avg Score", row=2, col=2)
-    fig.update_yaxes(title_text="Pass Rate %", row=3, col=1)
-    fig.update_yaxes(title_text="Score", row=3, col=2)
-
+    fig.tight_layout()
+    if save_dir:
+        fig.savefig(f"{save_dir}/categories.png", dpi=200, bbox_inches="tight")
     return fig
 
+
+# ── Main ─────────────────────────────────────────────────────────────────────
 
 def main():
     parser = argparse.ArgumentParser(description="AutismBench - Visualization")
     parser.add_argument("results_file", help="Path to results JSON file")
-    parser.add_argument("--save", action="store_true", help="Save as HTML")
-    parser.add_argument("--output", type=str, default="dashboard.html", help="Output HTML path")
+    parser.add_argument("--save", action="store_true", help="Save plots to ./assets/")
+    parser.add_argument("--output-dir", type=str, default="assets", help="Output directory")
+    parser.add_argument("--no-show", action="store_true", help="Don't show interactive plots")
     args = parser.parse_args()
 
-    results = load_results(args.results_file)
-    fig = build_dashboard(results)
+    if args.no_show:
+        matplotlib.use("Agg")
 
+    setup_style()
+    results = load_results(args.results_file)
+
+    save_dir = None
     if args.save:
-        fig.write_html(args.output, include_plotlyjs="cdn")
-        print(f"Dashboard saved to {args.output}")
-    else:
-        fig.show()
+        save_dir = args.output_dir
+        os.makedirs(save_dir, exist_ok=True)
+
+    print("Generating charts...")
+    plot_leaderboard(results, save_dir)
+    plot_difficulty_curve(results, save_dir)
+    plot_heatmap(results, save_dir)
+    plot_perfect_rate(results, save_dir)
+    plot_category_breakdown(results, save_dir)
+
+    if save_dir:
+        print(f"Saved to {save_dir}/")
+
+    if not args.no_show:
+        plt.show()
 
 
 if __name__ == "__main__":
