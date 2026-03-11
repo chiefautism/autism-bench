@@ -80,14 +80,13 @@
   .levels-badge { font-size: 0.8em; color: var(--text2); background: var(--surface2); padding: 2px 8px; border-radius: 4px; }
 
   /* Charts */
-  .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 32px 0; }
+  .charts-list { display: flex; flex-direction: column; gap: 20px; margin: 32px 0; }
   .chart-card {
     background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-    padding: 20px; position: relative;
+    padding: 24px;
   }
-  .chart-card.wide { grid-column: 1 / -1; }
-  .chart-title { font-size: 0.95em; font-weight: 600; margin-bottom: 16px; color: var(--text); }
-  canvas { width: 100% !important; }
+  .chart-title { font-size: 1em; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+  .chart-container { position: relative; width: 100%; }
 
   /* Panel */
   .panel { display: none; }
@@ -151,22 +150,30 @@
 
   <!-- Charts -->
   <div class="panel" id="charts">
-    <div class="charts">
-      <div class="chart-card wide">
+    <div class="charts-list">
+      <div class="chart-card">
         <div class="chart-title">Leaderboard</div>
-        <canvas id="chart-leaderboard" height="90"></canvas>
+        <div class="chart-container" style="height:600px">
+          <canvas id="chart-leaderboard"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Difficulty Curve (Avg Score per Level)</div>
+        <div class="chart-container" style="height:500px">
+          <canvas id="chart-difficulty"></canvas>
+        </div>
       </div>
       <div class="chart-card">
         <div class="chart-title">Validity by Level</div>
-        <canvas id="chart-heatlines" height="200"></canvas>
+        <div class="chart-container" style="height:500px">
+          <canvas id="chart-heatlines"></canvas>
+        </div>
       </div>
       <div class="chart-card">
         <div class="chart-title">Category Pass Rate</div>
-        <canvas id="chart-categories" height="200"></canvas>
-      </div>
-      <div class="chart-card wide">
-        <div class="chart-title">Difficulty Curve (Avg Score per Level)</div>
-        <canvas id="chart-difficulty" height="100"></canvas>
+        <div class="chart-container" style="height:500px">
+          <canvas id="chart-categories"></canvas>
+        </div>
       </div>
     </div>
   </div>
@@ -283,51 +290,54 @@ document.querySelectorAll('#lb-table th[data-key]').forEach(th => {
 });
 
 function renderCharts() {
-  const entries = Object.entries(DATA.models).sort((a, b) => b[1].score - a[1].score);
+  // Filter out score=0 junk, sort by score
+  const entries = Object.entries(DATA.models)
+    .filter(([, d]) => d.score > 0)
+    .sort((a, b) => b[1].score - a[1].score);
   const names = entries.map(([id]) => shortName(id));
   const scores = entries.map(([, d]) => d.score);
   const validities = entries.map(([, d]) => d.validity);
 
+  const scaleStyle = { ticks: { color: '#8b949e', font: { size: 12 } }, grid: { color: '#21262d' } };
   const chartOpts = {
     responsive: true,
-    plugins: { legend: { labels: { color: '#8b949e', font: { size: 11 } } } },
-    scales: {
-      x: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } },
-      y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } },
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#e6edf3', font: { size: 12 }, padding: 16, usePointStyle: true, pointStyleWidth: 16 },
+      },
     },
+    scales: { x: { ...scaleStyle }, y: { ...scaleStyle } },
   };
 
-  // Leaderboard bar
+  // Leaderboard bar (horizontal)
   new Chart(document.getElementById('chart-leaderboard'), {
     type: 'bar',
     data: {
       labels: names,
-      datasets: [
-        {
-          label: 'Score',
-          data: scores,
-          backgroundColor: entries.map((_, i) => COLORS[i % COLORS.length] + 'CC'),
-          borderRadius: 4,
-        },
-        {
-          label: 'Validity %',
-          data: validities,
-          backgroundColor: entries.map((_, i) => COLORS[i % COLORS.length] + '44'),
-          borderRadius: 4,
-        },
-      ],
+      datasets: [{
+        label: 'Total Score',
+        data: scores,
+        backgroundColor: entries.map((_, i) => COLORS[i % COLORS.length] + 'CC'),
+        borderColor: entries.map((_, i) => COLORS[i % COLORS.length]),
+        borderWidth: 1,
+        borderRadius: 4,
+        barThickness: 28,
+      }],
     },
     options: {
       ...chartOpts,
       indexAxis: 'y',
+      plugins: { ...chartOpts.plugins, legend: { display: false } },
       scales: {
-        x: { ...chartOpts.scales.x, beginAtZero: true },
-        y: { ...chartOpts.scales.y },
+        x: { ...scaleStyle, beginAtZero: true, title: { display: true, text: 'Total Score', color: '#8b949e' } },
+        y: { ...scaleStyle, ticks: { ...scaleStyle.ticks, font: { size: 13, weight: 'bold' } } },
       },
     },
   });
 
-  // Difficulty curve
+  // Collect all levels
   const allLevels = new Set();
   entries.forEach(([, d]) => Object.keys(d.level_details).forEach(l => allLevels.add(+l)));
   const levels = [...allLevels].sort((a, b) => a - b);
@@ -335,51 +345,47 @@ function renderCharts() {
   // Filter out broken models (validity < 5%)
   const activeEntries = entries.filter(([, d]) => d.validity > 5);
 
+  const lineDataset = (id, d, field) => ({
+    label: shortName(id),
+    data: levels.map(l => d.level_details[String(l)]?.[field] ?? null),
+    borderColor: COLORS[entries.findIndex(e => e[0] === id) % COLORS.length],
+    backgroundColor: COLORS[entries.findIndex(e => e[0] === id) % COLORS.length] + '33',
+    tension: 0.3,
+    pointRadius: 5,
+    pointHoverRadius: 8,
+    borderWidth: 2.5,
+    fill: false,
+    spanGaps: true,
+  });
+
+  // Difficulty curve
   new Chart(document.getElementById('chart-difficulty'), {
     type: 'line',
     data: {
       labels: levels.map(String),
-      datasets: activeEntries.map(([id, d], i) => ({
-        label: shortName(id),
-        data: levels.map(l => d.level_details[String(l)]?.avg_score ?? null),
-        borderColor: COLORS[entries.findIndex(e => e[0] === id) % COLORS.length],
-        backgroundColor: COLORS[entries.findIndex(e => e[0] === id) % COLORS.length] + '22',
-        tension: 0.3,
-        pointRadius: 4,
-        borderWidth: 2.5,
-        fill: false,
-        spanGaps: true,
-      })),
+      datasets: activeEntries.map(([id, d]) => lineDataset(id, d, 'avg_score')),
     },
     options: {
       ...chartOpts,
       scales: {
-        x: { ...chartOpts.scales.x, title: { display: true, text: 'Constraint Level', color: '#8b949e' } },
-        y: { ...chartOpts.scales.y, beginAtZero: true, title: { display: true, text: 'Avg Score', color: '#8b949e' } },
+        x: { ...scaleStyle, title: { display: true, text: 'Constraint Level', color: '#8b949e' } },
+        y: { ...scaleStyle, beginAtZero: true, title: { display: true, text: 'Avg Score', color: '#8b949e' } },
       },
     },
   });
 
-  // Validity by level (line chart)
+  // Validity by level
   new Chart(document.getElementById('chart-heatlines'), {
     type: 'line',
     data: {
       labels: levels.map(String),
-      datasets: activeEntries.map(([id, d], i) => ({
-        label: shortName(id),
-        data: levels.map(l => d.level_details[String(l)]?.validity ?? null),
-        borderColor: COLORS[entries.findIndex(e => e[0] === id) % COLORS.length],
-        tension: 0.3,
-        pointRadius: 3,
-        borderWidth: 2,
-        spanGaps: true,
-      })),
+      datasets: activeEntries.map(([id, d]) => lineDataset(id, d, 'validity')),
     },
     options: {
       ...chartOpts,
       scales: {
-        x: { ...chartOpts.scales.x, title: { display: true, text: 'Level', color: '#8b949e' } },
-        y: { ...chartOpts.scales.y, beginAtZero: true, max: 100, title: { display: true, text: 'Validity %', color: '#8b949e' } },
+        x: { ...scaleStyle, title: { display: true, text: 'Level', color: '#8b949e' } },
+        y: { ...scaleStyle, beginAtZero: true, max: 100, title: { display: true, text: 'Validity %', color: '#8b949e' } },
       },
     },
   });
@@ -393,18 +399,20 @@ function renderCharts() {
     type: 'bar',
     data: {
       labels: cats.map(c => c.charAt(0).toUpperCase() + c.slice(1)),
-      datasets: activeEntries.map(([id, d], i) => ({
+      datasets: activeEntries.map(([id, d]) => ({
         label: shortName(id),
         data: cats.map(c => d.categories?.[c] ?? 0),
         backgroundColor: COLORS[entries.findIndex(e => e[0] === id) % COLORS.length] + 'AA',
+        borderColor: COLORS[entries.findIndex(e => e[0] === id) % COLORS.length],
+        borderWidth: 1,
         borderRadius: 3,
       })),
     },
     options: {
       ...chartOpts,
       scales: {
-        x: { ...chartOpts.scales.x },
-        y: { ...chartOpts.scales.y, beginAtZero: true, max: 100, title: { display: true, text: 'Pass Rate %', color: '#8b949e' } },
+        x: { ...scaleStyle },
+        y: { ...scaleStyle, beginAtZero: true, max: 100, title: { display: true, text: 'Pass Rate %', color: '#8b949e' } },
       },
     },
   });
