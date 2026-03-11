@@ -66,6 +66,18 @@ At level 25+, the task resembles a **constraint satisfaction problem** -there's 
 
 ---
 
+## Sample Results
+
+10 models, levels 3-15, 5 trials per level.
+
+![Leaderboard](assets/leaderboard.png)
+
+![Difficulty Curve](assets/difficulty_curve.png)
+
+![Heatmap](assets/heatmap.png)
+
+---
+
 ## Constraint Categories
 
 ### Structural
@@ -138,31 +150,29 @@ At level 25+, the task resembles a **constraint satisfaction problem** -there's 
 | `model_list.py` | Supported model identifiers |
 | `visualization.py` | Leaderboard plots and analysis |
 | `utils.py` | Prompts, helpers, word lists |
-| `requirements.txt` | Dependencies |
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/autism-bench.git
+git clone https://github.com/chiefautism/autism-bench.git
 cd autism-bench
 
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+uv sync
 
 # Create .env with your API key
 echo "OPENROUTER_API_KEY=your-key-here" > .env
 
 # Run benchmark
-python main.py
+uv run python main.py
 
 # Specific models
-python main.py --models "anthropic/claude-sonnet-4" "openai/o3"
+uv run python main.py --models "anthropic/claude-sonnet-4" "openai/gpt-4.1"
 
 # Custom levels
-python main.py --min-level 3 --max-level 15 --trials 5
+uv run python main.py --min-level 3 --max-level 15 --trials 5
 
 # Visualize results
-python visualization.py results/autism_bench_results_*.json
+uv run python visualization.py results/autism_bench_results_*.json --save
 ```
 
 ---
